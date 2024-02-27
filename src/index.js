@@ -1,8 +1,9 @@
-console.log('gooos');
+console.log('scr checker');
 
 import { fetchBreeds, fetchCatByBreed } from "./cat-api";
 import SlimSelect from 'slim-select';
 import 'slim-select/dist/slimselect.css';
+import Notiflix from 'notiflix';
 
 const breedSelect = document.querySelector(".breed-select");
 const catInfo = document.querySelector(".cat-info");
@@ -27,7 +28,7 @@ const slim = new SlimSelect({
 
 function renderSelect(breeds) {
 
-  const defaultOption = '<option value="">Choose a Cat</option>';
+ // const defaultOption = '<option value="">Choose a Cat</option>';
 
     const markup = breeds
       .map(({ id, name }) => {
@@ -43,7 +44,7 @@ breedSelect.addEventListener('change', e => {
   if (selectedValue === '') {
     catInfo.innerHTML = '';
     return;
-}
+  }
     loader.classList.remove('invisible');
     fetchCatByBreed(selectedValue)
         .then(data => renderCat(data[0]));
@@ -52,18 +53,25 @@ breedSelect.addEventListener('change', e => {
     
 
 function renderCat(catData) {
+    
+    if (!catData) {
+      console.log('no info');
+      loader.classList.add('invisible');
+      Notiflix.Notify.failure('Oops! Something went wrong! Try reloading the page!');
+      return;
+    } 
     const { url } = catData;
     const { description, name, temperament } = catData.breeds[0];
     catInfo.innerHTML = 
-    `<div class="img-container">
-    <img id="cat-pic" src="${url}" />
-    </div>
-    <div class="info-container">
-    <h2>${name}</h2>
-    <p>${description}</p>
-    <p><span id="span-cat">Temperament: </span>${temperament}</p>
-    </div>`;
-    loader.classList.add('invisible');
+      `<div class="img-container">
+      <img id="cat-pic" src="${url}" />
+      </div>
+      <div class="info-container">
+      <h2>${name}</h2>
+      <p>${description}</p>
+      <p><span id="span-cat">Temperament: </span>${temperament}</p>
+      </div>`;
+      loader.classList.add('invisible');
 }
 
 
